@@ -1,7 +1,37 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class HomeScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:photo_video_searching_app/model/photo_model.dart';
+import 'package:photo_video_searching_app/ui/widget/photo_widget.dart';
+import 'package:http/http.dart' as http;
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _controller = TextEditingController();
+  List<Photo> _photos = [];
+
+  Future<List<Photo>> fetch(String query) async {
+    final response = await http.get(Uri.parse(
+        'https://pixabay.com/api/?key=10711147-dc41758b93b263957026bdadb&q=$query&image_type=photo'));
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['hits'] == null) {
+      return List.empty();
+    }
+    Iterable hits = jsonResponse['hits'];
+    return hits.map((e) => Photo.fromJson(e)).toList();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +41,7 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         title: const Text(
           '이미지 검색 앱',
-          style: const TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black),
         ),
         elevation: 0.0,
       ),
@@ -20,32 +50,34 @@ class HomeScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: TextField(
+              controller: _controller,
               decoration: InputDecoration(
                   border: const OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
                   ),
                   suffixIcon: IconButton(
-                      onPressed: () {}, icon: const Icon(Icons.search))),
+                      onPressed: () async {
+                        final photos = await fetch(_controller.text);
+                        setState(() {
+                          _photos = photos;
+                        });
+                      },
+                      icon: const Icon(Icons.search))),
             ),
           ),
           Expanded(
             child: GridView.builder(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-              itemCount: 10,
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                itemCount: _photos.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                 ),
                 itemBuilder: (context, index) {
-                  return Container(
-                    decoration:  const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage('https://img.vogue.co.kr/vogue/2022/05/style_627a16c2b312b.jpeg'),
-                      )
-                    ),
+                  final photo = _photos[index];
+                  return PhotoWidget(
+                    photo: photo,
                   );
                 }),
           )
