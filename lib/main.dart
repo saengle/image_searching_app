@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:photo_video_searching_app/data/photo_provider.dart';
+import 'package:photo_video_searching_app/data/pixarbay_api.dart';
 import 'package:photo_video_searching_app/ui/home_screen.dart';
 
 void main() {
@@ -15,7 +17,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(),
+      home: PhotoProvider(api: PixabayApi(),
+      child: const HomeScreen()),
     );
   }
 }

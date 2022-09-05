@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:photo_video_searching_app/data/pixarbay_api.dart';
+import 'package:photo_video_searching_app/data/photo_provider.dart';
 import 'package:photo_video_searching_app/model/photo_model.dart';
 import 'package:photo_video_searching_app/ui/widget/photo_widget.dart';
 
@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _controller = TextEditingController();
-  final pixabayApi = PixabayApi();
+
   List<Photo> _photos = [];
 
   @override
@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final photoProvider = PhotoProvider.of(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -45,7 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   suffixIcon: IconButton(
                       onPressed: () async {
-                        final photos = await pixabayApi.fetch(_controller.text);
+                        final photos =
+                            await photoProvider.api.fetch(_controller.text);
                         setState(() {
                           _photos = photos;
                         });

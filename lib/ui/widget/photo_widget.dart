@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:photo_video_searching_app/data/pixarbay_api.dart';
 import 'package:photo_video_searching_app/model/photo_model.dart';
 
 class PhotoWidget extends StatelessWidget {
