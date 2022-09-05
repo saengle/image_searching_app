@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:photo_video_searching_app/data/pixarbay_api.dart';
+import 'package:photo_video_searching_app/ui/home_view_model.dart';
 
 class PhotoProvider extends InheritedWidget {
-  final PixabayApi api;
+  final HomeViewModel viewModel;
 
-  const PhotoProvider({
+   const PhotoProvider({
     Key? key,
-    required this.api,
     required super.child,
+     required this.viewModel,
   }) : super(key: key);
 
   static PhotoProvider of(BuildContext context) {
@@ -19,6 +19,6 @@ class PhotoProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(PhotoProvider oldWidget) {
-    return oldWidget.api != api;
+    return true;
   }
 }
